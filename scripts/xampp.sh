@@ -44,8 +44,14 @@ setup_database() {
 	echo "Running schema..."
 	$mysql -u root webserver_db < "$SCRIPT_DIR/database/01_schema.sql"
 
+	echo "Running schema clientes..."
+	$mysql -u root webserver_db < "$SCRIPT_DIR/database/03_schema_cliente.sql"
+
 	echo "Running seed data..."
 	$mysql -u root webserver_db < "$SCRIPT_DIR/database/02_datos_de_prueba.sql"
+
+	echo "Running seed data clientes..."
+	$mysql -u root webserver_db < "$SCRIPT_DIR/database/04_datos_cliente.sql"
 }
 
 main() {

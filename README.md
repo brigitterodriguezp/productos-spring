@@ -13,7 +13,7 @@
 
 ## 1. Descripcion del Proyecto
 
-Proyecto siendo una API REST construida con Spring Boot para la gestion de productos. Exponiendo operaciones CRUD sobre una entidad `Producto` persistida en MySQL, implementando validacion de datos y utilizando JPA/Hibernate como capa de acceso a datos.
+API REST construida con Spring Boot para la gestion de productos y clientes. Expone operaciones CRUD sobre las entidades `Producto` y `Cliente` persistidas en MySQL, implementando validacion de datos y utilizando JPA/Hibernate como capa de acceso a datos.
 
 ---
 
@@ -28,16 +28,15 @@ Proyecto siendo una API REST construida con Spring Boot para la gestion de produ
 | Hibernate ORM | 6.6.15 |
 | MySQL | 8.4 |
 | Maven | 3.9.9 |
-| Docker | 26.1.5 |
-| Docker Compose | 2.26.1 |
+
 | Apache Tomcat | Embebido en Spring Boot |
 | XAMPP | 8.2.12-0 |
 
 ---
 
-## 3. Arquitectura
+## 3. Arquitectura por Capas
 
-Proyecto implementando el patron **MVC (Model-View-Controller)** adaptado a una API REST:
+Proyecto implementando una arquitectura en capas:
 
 ```mermaid
 graph TD
@@ -46,10 +45,10 @@ graph TD
     end
 
     subgraph Spring Boot
-        Controller[ProductoController]
-        Service[ProductoService]
-        Repository[ProductoRepository]
-        Entity[Producto]
+        Controller[Controller Layer]
+        Service[Service Layer]
+        Repository[Repository Layer]
+        Entity[Entity Layer]
     end
 
     subgraph Database
@@ -66,10 +65,33 @@ graph TD
 
 **Capas:**
 
-- **Controller** — ProductoController manejando peticiones HTTP y delegando al service.
-- **Service** — ProductoService conteniendo la logica de negocio.
-- **Repository** — ProductoRepository extendiendo JpaRepository para acceso a datos.
-- **Model** — Producto siendo la entidad JPA mapeando la tabla `productos`.
+- **Controller** — Maneja las peticiones HTTP y delega al service. `ProductoController`, `ClienteController`.
+- **Service** — Contiene la logica de negocio y validaciones. `ProductoService`, `ClienteService`.
+- **Repository** — Capa de acceso a datos, extiende JpaRepository. `ProductoRepository`, `ClienteRepository`.
+- **Entity** — Modelo del dominio mapeando las tablas de la base de datos. `Producto`, `Cliente`.
+
+### Diagrama del flujo de una peticion POST
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente HTTP
+    participant Ctrl as Controller
+    participant Svc as Service
+    participant Repo as Repository
+    participant DB as MySQL
+
+    C->>Ctrl: POST /api/productos (JSON)
+    Ctrl->>Ctrl: @Valid valida el cuerpo
+    Ctrl->>Svc: crearProducto(producto)
+    Svc->>Repo: existsByNombreIgnoreCase(nombre)
+    Repo-->>Svc: false (no duplicado)
+    Svc->>Repo: save(producto)
+    Repo->>DB: INSERT INTO productos
+    DB-->>Repo: fila insertada
+    Repo-->>Svc: Producto con id
+    Svc-->>Ctrl: Producto creado
+    Ctrl-->>C: 201 Created (JSON)
+```
 
 ---
 
@@ -83,6 +105,14 @@ erDiagram
         VARCHAR(255) descripcion "NOT NULL"
         DECIMAL precio "NOT NULL"
         INT stock "NOT NULL"
+    }
+    clientes {
+        BIGINT id PK "AUTO_INCREMENT"
+        VARCHAR(100) nombre "NOT NULL"
+        VARCHAR(100) apellido "NOT NULL"
+        VARCHAR(150) correo "NOT NULL"
+        VARCHAR(20) telefono "NOT NULL"
+        VARCHAR(255) direccion "NOT NULL"
     }
 ```
 
@@ -109,6 +139,30 @@ erDiagram
   "descripcion": "Monitor de 24 pulgadas",
   "precio": 129.99,
   "stock": 10
+}
+```
+
+### Clientes
+
+**URL Base:** `http://localhost:8081/api/clientes`
+
+| Metodo | Ruta | Descripcion |
+|---|---|---|
+| `GET` | `/` | Listar todos los clientes |
+| `GET` | `/{id}` | Buscar cliente por ID |
+| `POST` | `/` | Crear un nuevo cliente |
+| `PUT` | `/{id}` | Actualizar un cliente existente |
+| `DELETE` | `/{id}` | Eliminar un cliente |
+
+**Ejemplo de cuerpo para POST/PUT:**
+
+```json
+{
+  "nombre": "Carlos",
+  "apellido": "Gomez",
+  "correo": "carlos.gomez@email.com",
+  "telefono": "0991234567",
+  "direccion": "Av. Amazonas N52-34, Quito"
 }
 ```
 
