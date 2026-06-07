@@ -35,7 +35,9 @@ setup_database() {
 	$mysql -u root <<-EOSQL
 		CREATE DATABASE IF NOT EXISTS webserver_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 		CREATE USER IF NOT EXISTS 'springuser'@'localhost' IDENTIFIED BY 'spring456';
+		CREATE USER IF NOT EXISTS 'springuser'@'%' IDENTIFIED BY 'spring456';
 		GRANT ALL PRIVILEGES ON webserver_db.* TO 'springuser'@'localhost';
+		GRANT ALL PRIVILEGES ON webserver_db.* TO 'springuser'@'%';
 		FLUSH PRIVILEGES;
 	EOSQL
 

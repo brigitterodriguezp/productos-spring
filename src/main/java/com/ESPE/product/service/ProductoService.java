@@ -25,12 +25,19 @@ public class ProductoService {
     }
 
     public Producto crearProducto(Producto producto) {
+        if (productoRepository.existsByNombreIgnoreCase(producto.getNombre())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un producto con el nombre '" + producto.getNombre() + "'");
+        }
         producto.setId(null);
         return productoRepository.save(producto);
     }
 
     public Producto actualizarProducto(Long id, Producto productoActualizado) {
         Producto productoExistente = buscarPorId(id);
+        if (!productoExistente.getNombre().equalsIgnoreCase(productoActualizado.getNombre())
+                && productoRepository.existsByNombreIgnoreCase(productoActualizado.getNombre())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un producto con el nombre '" + productoActualizado.getNombre() + "'");
+        }
         productoExistente.setNombre(productoActualizado.getNombre());
         productoExistente.setDescripcion(productoActualizado.getDescripcion());
         productoExistente.setPrecio(productoActualizado.getPrecio());
