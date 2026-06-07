@@ -81,7 +81,7 @@ erDiagram
         BIGINT id PK "AUTO_INCREMENT"
         VARCHAR(100) nombre "NOT NULL"
         VARCHAR(255) descripcion "NOT NULL"
-        DECIMAL(10,2) precio "NOT NULL"
+        DECIMAL precio "NOT NULL"
         INT stock "NOT NULL"
     }
 ```
