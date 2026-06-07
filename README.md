@@ -90,14 +90,16 @@ erDiagram
 
 ## 5. Endpoints Disponibles
 
+**URL Base:** `http://localhost:8081/api/productos`
+
 | Metodo | Ruta | Descripcion |
 |---|---|---|
-| `GET` | `/api/productos/ping` | Health check del servicio |
-| `GET` | `/api/productos` | Listar todos los productos |
-| `GET` | `/api/productos/{id}` | Buscar producto por ID |
-| `POST` | `/api/productos` | Crear un nuevo producto |
-| `PUT` | `/api/productos/{id}` | Actualizar un producto existente |
-| `DELETE` | `/api/productos/{id}` | Eliminar un producto |
+| `GET` | `/ping` | Health check del servicio |
+| `GET` | `/` | Listar todos los productos |
+| `GET` | `/{id}` | Buscar producto por ID |
+| `POST` | `/` | Crear un nuevo producto |
+| `PUT` | `/{id}` | Actualizar un producto existente |
+| `DELETE` | `/{id}` | Eliminar un producto |
 
 **Ejemplo de cuerpo para POST/PUT:**
 
